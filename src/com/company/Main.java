@@ -6,7 +6,7 @@ import java.util.Scanner;
 
 public class Main {
     static Random rand = new Random(); // mēs izveidojām jaunu mainīgo vērtību rand kura ir Random tipa objekts,
-    static Scanner scan = new Scanner(System.in);
+    static Scanner scan = new Scanner(System.in); //mēs izveidojām jaunu skaneri, kas nolasa no formas (System.in) ko ievadīja lietotājs
 
     public static void main(String[] args) {
         int myNum = rand.nextInt(100) + 1; // bound 100 apzīmē diapazonu no 0 līdz 99. Ar +1 mēs nosakam diapazonu no 1 līdz 100
@@ -15,7 +15,7 @@ public class Main {
         boolean userLost = true; // mēs izveidojām šo mainīgo lai noskaidrotu vai lietotājs zaudeja vai vinnēja. vēlāk mēs šo mainīgo izmantosim lai atspoguļotu tekstu zaudējuma gadījumā.
         for (int attempt = 1; attempt <= 7; attempt++) { //ar šo ciklu mēs dodam lietotājam x mēģinājumus atminēt skaitli.
             System.out.println("Try #" + attempt); // tas ir priekš teksta pirms katra mēģinājuma,
-            int userNum = scan.nextInt();
+            int userNum = scan.nextInt(); // ar šo mēs prasam programmu interpretēt to ko ievadīja lietotājs kā integer
 
             if (myNum > userNum) {
                 System.out.println("My number is greater");
