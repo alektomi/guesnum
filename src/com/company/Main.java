@@ -13,6 +13,7 @@ public class Main {
         System.out.println(myNum);
 
         boolean userLost = true; // mēs izveidojām šo mainīgo lai noskaidrotu vai lietotājs zaudeja vai vinnēja. vēlāk mēs šo mainīgo izmantosim lai atspoguļotu tekstu zaudējuma gadījumā.
+
         for (int attempt = 1; attempt <= 7; attempt++) { //ar šo ciklu mēs dodam lietotājam x mēģinājumus atminēt skaitli.
             System.out.println("Try #" + attempt); // tas ir priekš teksta pirms katra mēģinājuma,
             int userNum = scan.nextInt(); // ar šo mēs prasam programmu interpretēt to ko ievadīja lietotājs kā integer
@@ -30,5 +31,7 @@ public class Main {
         if (userLost == true) { // Izgaismots tāpēc ka mēs varam nerakstīt == true, jo userLost jau pašā sākumā noteikt kā true. ja userLost parādās šeit tas arī nozīmē ka tas ir true.
             System.out.println("You lost. Buagagagaga!!");
         }
+        System.out.println("Would you like to play again? Please enter yes or no.");
     }
 }
+
