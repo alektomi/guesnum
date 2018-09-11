@@ -1,21 +1,25 @@
 package com.company;
 
 
-import java.util.InputMismatchException;
-import java.util.Random;
-import java.util.Scanner;
+import java.util.*;
 
 public class Main {
     static Random rand = new Random(); // mēs izveidojām jaunu mainīgo vērtību rand kura ir Random tipa objekts,
     static Scanner scan = new Scanner(System.in); //mēs izveidojām jaunu skaneri, kas nolasa no formas (System.in) ko ievadīja lietotājs
+    static List<GameResult> results = new ArrayList<>(); // nazvanie lista sovpadaet s nazvaniem novogo klassa "GameResult"
 
     public static void main(String[] args) {
 
         String answer; //šo mainīgo vajag iznest ārā, jo mainīgā vērtība dzīvo tikai iekš {}
-
         do {
+            System.out.println("What is your name?");
+            String userName = scan.next();
+            System.out.println("Hi, " + userName + ", let's play!");
+
             int myNum = rand.nextInt(100) + 1; // bound 100 apzīmē diapazonu no 0 līdz 99. Ar +1 mēs nosakam diapazonu no 1 līdz 100
             System.out.println(myNum);
+
+            long t1 = System.currentTimeMillis();
 
             boolean userLost = true; // mēs izveidojām šo mainīgo lai noskaidrotu vai lietotājs zaudeja vai vinnēja. vēlāk mēs šo mainīgo izmantosim lai atspoguļotu tekstu zaudējuma gadījumā.
 
@@ -31,6 +35,16 @@ public class Main {
                     System.out.println("You won!");
                     System.out.println("Would you like to play again? Please enter yes or no.");
                     userLost = false;
+
+                    long t2 = System.currentTimeMillis();
+
+                    long userPlayTime = (t2 - t1) / 1000; // poluchennye mili sekundy delim na 1000 i poluchili sekundy
+
+                    GameResult r = new GameResult(); // sozdaem novyj rezultat dlaj peremennogo znachenija i etot rezultat budet hranitsja v peremennoj r
+                    r.name = userName; // .name berem iz GameResult
+                    r.triesCount = attempt; // i = kol-vo popytok.
+                    r.gameTime = userPlayTime;
+                    results.add(r);
                     break;
                 }
             }
@@ -41,7 +55,16 @@ public class Main {
             answer = askYN(); // kad programma nonāks līdz šai vietai, tā aizies uz static String askNY, lai pajautātu
 
         } while (answer.equalsIgnoreCase("yes")); // do ends here
+
+        showResult(); // vyzyvaem metod.
+
         System.out.println("Good bye!"); // šo tekstu paska ja lietotājs negrib turpināt.
+    }
+
+    private static void showResult() { // jeto stroku mozhno napisatj manualno ili nazatj ALT + ENTER na showResult
+        for (GameResult r : results) { // nuzhno vzjatj spisok result i projtisj po vsem peremennym
+            System.out.println(r.name + " needed -> " + r.triesCount + " tries and " + r.gameTime + " seconds.");
+        }
     }
 
 
