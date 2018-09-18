@@ -1,6 +1,9 @@
 package com.company;
 
 
+import java.io.File;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.*;
 
 public class Main {
@@ -10,6 +13,8 @@ public class Main {
 
     public static void main(String[] args) {
 
+        loadResults(); // metod dlja zapuska rezultatov
+
         String answer; //šo mainīgo vajag iznest ārā, jo mainīgā vērtība dzīvo tikai iekš {}
         do {
             System.out.println("What is your name?");
@@ -17,7 +22,7 @@ public class Main {
             System.out.println("Hi, " + userName + ", let's play!");
 
             int myNum = rand.nextInt(100) + 1; // bound 100 apzīmē diapazonu no 0 līdz 99. Ar +1 mēs nosakam diapazonu no 1 līdz 100
-            System.out.println(myNum);
+            System.out.println(myNum); // ja aktivizēt šo, tad IDEA rādīs skaitli kuru prasa programma
 
             long t1 = System.currentTimeMillis();
 
@@ -38,13 +43,16 @@ public class Main {
 
                     long t2 = System.currentTimeMillis();
 
-                    long userPlayTime = (t2 - t1) / 1000; // poluchennye mili sekundy delim na 1000 i poluchili sekundy
+                    long userPlayTime = (t2 - t1); // poluchennye mili sekundy delim na 1000 i poluchili sekundy
 
                     GameResult r = new GameResult(); // sozdaem novyj rezultat dlaj peremennogo znachenija i etot rezultat budet hranitsja v peremennoj r
                     r.name = userName; // .name berem iz GameResult
                     r.triesCount = attempt; // i = kol-vo popytok.
                     r.gameTime = userPlayTime;
                     results.add(r);
+
+                    results.sort(Comparator.<GameResult>comparingInt(r0 -> r0.triesCount).thenComparingLong(r0 -> r0.gameTime)); // šīs ieraksts maina SARAKSTU FAILĀ, sasortējot to pēc triesCount. katru reizi kad beigsies spēle, saraksts tiks sasortēts no jauna
+// result.sort sasortē visu sarakstu ar rezultātierm pēc katras spēles beogām.
                     break;
                 }
             }
@@ -56,17 +64,85 @@ public class Main {
 
         } while (answer.equalsIgnoreCase("yes")); // do ends here
 
-        showResult(); // vyzyvaem metod.
+        showResult(); // vyzyvaem metod. Dlja pokazyvanija vseh rezultatov
+
+        saveResults(); // izveidojām metodi, lai varētu saglabāt spēles rezultātus uz diska un nākamreiz tie būtu pieejami.
 
         System.out.println("Good bye!"); // šo tekstu paska ja lietotājs negrib turpināt.
     }
 
-    private static void showResult() { // jeto stroku mozhno napisatj manualno ili nazatj ALT + ENTER na showResult
-        for (GameResult r : results) { // nuzhno vzjatj spisok result i projtisj po vsem peremennym
-            System.out.println(r.name + " needed -> " + r.triesCount + " tries and " + r.gameTime + " seconds.");
+    private static void loadResults() {
+        File file = new File("top_scores.txt");
+        try (Scanner in = new Scanner(file)) {
+
+            while (in.hasNext()) { // .hasNext pārbauda vai failā ir vēl kaut kas ko var izlasīt
+                GameResult result = new GameResult();
+                result.name = in.next();
+                result.triesCount = in.nextInt();
+                result.gameTime = in.nextLong();
+                results.add(result);
+            }
+        } catch (IOException e) {
+            System.out.println("Cannot load from file");
         }
     }
 
+    private static void saveResults() {
+        File file = new File("top_scores.txt"); // ja nenorādīt konkrēetu adresi, IDEA saglabās šo failu projekta direktorijā
+        try (PrintWriter out = new PrintWriter(file)) {
+            for (GameResult r : results) {
+                out.printf("%s %d %d\r\n", r.name, r.triesCount, r.gameTime); // lietojām printf (rakstīt ar formatēšanu; \r - lai ieraksti būtu katrs savā rindā notepad failā. tas ir vajadzīgs tikai windows. IDEA to lasa normāli. \n - znak dlja perevoda stroki)
+            }
+        } catch (IOException e) {
+            System.out.println("Cannot save to file");
+        }
+    }
+// 1. variants kā rādīt tikai X rezultātus
+
+//    private static void showResult() { // jeto stroku mozhno napisatj manualno ili nazatj ALT + ENTER na showResult
+//        int count = 0;
+//        for (GameResult r : results) { // nuzhno vzjatj spisok result i projtisj po vsem peremennym
+//            System.out.printf("%s needed %d tries and %.2fsec to win\n", r.name, r.triesCount, (r.gameTime / 1000.0));
+//
+//            count ++;
+//            if (count == 5) {
+//                break;
+//            }
+//        }
+//    }
+
+// 2. variants kā rādīt X rezultātus
+
+//    private static void showResult() { // jeto stroku mozhno napisatj manualno ili nazatj ALT + ENTER na showResult
+//        int count = 5;
+//        if (results.size() < 5) {
+//            count = results.size();
+//        }
+//        for (int i = 0; i < count; i++) {
+//            GameResult r = results.get(i); // nuzhno vzjatj spisok result i projtisj po vsem peremennym
+//            System.out.printf("%s needed %d tries and %.2fsec to win\n", r.name, r.triesCount, (r.gameTime / 1000.0));
+//        }
+//    }
+
+// 3 variants kā rādīt X rezultātus
+
+//    private static void showResult() { // jeto stroku mozhno napisatj manualno ili nazatj ALT + ENTER na showResult
+//        int count = Math.min(5, results.size());
+//        for (int i = 0; i < count; i++) {
+//            GameResult r = results.get(i); // nuzhno vzjatj spisok result i projtisj po vsem peremennym
+//            System.out.printf("%s needed %d tries and %.2fsec to win\n", r.name, r.triesCount, (r.gameTime / 1000.0));
+//        }
+//    }
+
+    // 4. variants kā rādīt X rezultātus
+    private static void showResult() { // jeto stroku mozhno napisatj manualno ili nazatj ALT + ENTER na showResult
+        results.stream() // ņemam spisok rezult un pārveidojam to uz Stream
+                //     .filter(r -> r.name.equals("Alex")) // filtrēšanas konstrukcija ja vajag rādīt konkrētas vērtības
+                .limit(5) // rādīs tikai 5 rezultātus
+                .forEach(r -> {
+                    System.out.printf("%s needed %d tries and %.2fsec to win\n", r.name, r.triesCount, (r.gameTime / 1000.0));
+                }); // curly brackets in brackets - ir lambda. peredajetsja dejstvie.
+    }
 
     // šī daļa ir pēc Main metodes.
     static String askYN() {  // izveidojām metodi, kurš jautās lietotājam yes vai No. šo metodi mēs varam labot un tas neietekmēs citas rindas.
