@@ -4,6 +4,7 @@ package com.company;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.sql.SQLOutput;
 import java.util.*;
 
 public class Main {
@@ -136,12 +137,38 @@ public class Main {
 
     // 4. variants kā rādīt X rezultātus
     private static void showResult() { // jeto stroku mozhno napisatj manualno ili nazatj ALT + ENTER na showResult
+
+        int maxLen = findMaxNameLen();
+
         results.stream() // ņemam spisok rezult un pārveidojam to uz Stream
-                //     .filter(r -> r.name.equals("Alex")) // filtrēšanas konstrukcija ja vajag rādīt konkrētas vērtības
                 .limit(5) // rādīs tikai 5 rezultātus
                 .forEach(r -> {
-                    System.out.printf("%s needed %d tries and %.2fsec to win\n", r.name, r.triesCount, (r.gameTime / 1000.0));
+                    System.out.print(r.name);
+                    for (int i = 0; i < (maxLen - r.name.length()); i++) {
+                        System.out.print("_");
+                    }
+                    System.out.printf(" needed %d tries and %.2fsec to win\n", r.triesCount, (r.gameTime / 1000.0));
                 }); // curly brackets in brackets - ir lambda. peredajetsja dejstvie.
+    }
+
+// 1. TABLICA
+//    private static int findMaxNameLen() {
+//        int result = 0;
+//        for (GameResult r : results) {
+//            if (result < r.name.length()) {
+//                result = r.name.length();
+//            }
+//        }
+//        return result;
+//    }
+
+// 2. TABLICA
+    private static int findMaxNameLen() {
+        return results.stream()
+                .map(r -> r.name)
+                .map(n -> n.length())
+                .max(Comparator.naturalOrder())
+                .get();
     }
 
     // šī daļa ir pēc Main metodes.
